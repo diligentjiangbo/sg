@@ -148,7 +148,7 @@ def add_env(request):
     idc2_code = request.POST.get('idc2_code')
     broadcast = request.POST.get('broadcast')
     env = Environment(name=name, desc=desc, zk_idc1=zk_idc1, zk_idc2=zk_idc2, namesrv=namesrv, broker_idc1=broker_idc1, broker_idc2=broker_idc2, cluster_name_idc1=cluster_name_idc1, cluster_name_idc2=cluster_name_idc2, broadcast=broadcast)
-    env.zk_root_path = "cn/onebank/gns/route"
+    env.zk_root_path = "cn/onebank/gns/" + name + "/route"
     env.idc1_code = idc1_code
     env.idc2_code = idc2_code
     idc1_rdfa_list = request.POST.getlist('idc1_rdfa_list')
@@ -253,6 +253,9 @@ def env2zk(request, env):
   dfa_dict.setdefault("BM", idc1_code+"B0")
   dfa_dict.setdefault("MGMT", idc1_code+"G0")
   dfa_dict.setdefault("DA", idc1_code+"Z0")
+
+  # 拿到根路径
+  root_path = env_obj.zk_root_path
   
   #拿到zk的信息，建立连接
   zk_idc1 = env_obj.zk_idc1
@@ -279,7 +282,7 @@ def env2zk(request, env):
     dfaList = dfa_dict.get(service.dfa).split(",")
     if dfaList:
       for client in zk_list:
-        add_route(client, service.service_id, service.scene_id, dfaList)
+        add_route(client, service.service_id, service.scene_id, dfaList, root_path)
       #修改operate_type
       ServiceEnv.objects.filter(pk=service.id).update(zk_type=None)
     else:
@@ -290,7 +293,7 @@ def env2zk(request, env):
     dfaList = dfa_dict.get(service.dfa).split(",")
     if dfaList:
       for client in zk_list:
-        delete_route(client, service.service_id, service.scene_id, dfaList)
+        delete_route(client, service.service_id, service.scene_id, dfaList, root_path)
       #删除数据，要zk和giraffe的标志位都为None才能删除
       ServiceEnv.objects.filter(pk=service.id).update(zk_type=None)
       ServiceEnv.objects.filter(pk=service.id, zk_type=None, giraffe_type=None).delete()
