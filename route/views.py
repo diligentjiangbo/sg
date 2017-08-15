@@ -25,7 +25,7 @@ from kazoo.client import KazooClient
 #自定义解析文件函数
 from file.file_analyze import analyze
 #自定义zk工具
-from zk.zk_tool import add_route, delete_route
+from zk.zk_tool import add_route, delete_route, createZkNode
 #自定义giraffe工具
 from giraffe.giraffe_tcp_tool import connect, close, create_topic, delete_broker_topic, delete_namesrv_topic
 
@@ -148,7 +148,7 @@ def add_env(request):
     idc2_code = request.POST.get('idc2_code')
     broadcast = request.POST.get('broadcast')
     env = Environment(name=name, desc=desc, zk_idc1=zk_idc1, zk_idc2=zk_idc2, namesrv=namesrv, broker_idc1=broker_idc1, broker_idc2=broker_idc2, cluster_name_idc1=cluster_name_idc1, cluster_name_idc2=cluster_name_idc2, broadcast=broadcast)
-    env.zk_root_path = "cn/onebank/gns/" + name + "/route"
+    env.zk_root_path = "/cn/onebank/gns/" + name
     env.idc1_code = idc1_code
     env.idc2_code = idc2_code
     idc1_rdfa_list = request.POST.getlist('idc1_rdfa_list')
@@ -255,7 +255,7 @@ def env2zk(request, env):
   dfa_dict.setdefault("DA", idc1_code+"Z0")
 
   # 拿到根路径
-  root_path = env_obj.zk_root_path
+  root_path = env_obj.zk_root_path + "/route"
   
   #拿到zk的信息，建立连接
   zk_idc1 = env_obj.zk_idc1
@@ -453,7 +453,100 @@ def delete_service(request, id):
   
 #删除一个环境
 def delete_env(request, name):
-  print("id=%s"%(name))
+  env_obj = Environment.objects.get(name=name)
+  root_path = env_obj.zk_root_path
+  zk_idc1 = env_obj.zk_idc1
+  zk_idc2 = env_obj.zk_idc2
+
+  # 初始化zk连接
+  zk_list = list()
+  print(zk_idc1)
+  try:
+    zk1 = KazooClient(zk_idc1)
+    zk1.start()
+    zk_list.append(zk1)
+    if not zk_idc1 == zk_idc2:
+      zk2 = KazooClient(zk_idc2)
+      zk2.start()
+      zk_list.append(zk2)
+  except:
+    data = {}
+    data.setdefault("code", "-1")
+    data.setdefault("msg", "连接zk失败")
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+  # 删除该环境的根节点
+  for zk in zk_list:
+    if zk.exists(root_path):
+      zk.delete(root_path, recursive=True)
+
+
+  # 删除数据库信息
   Environment.objects.filter(pk=name).delete()
   return HttpResponseRedirect(reverse("route:env"))
-  
+
+# 初始化环境
+def init_env(request, name):
+  env_obj = Environment.objects.get(name=name)
+  root_path = env_obj.zk_root_path
+  zk_idc1 = env_obj.zk_idc1
+  zk_idc2 = env_obj.zk_idc2
+  idc1_code = env_obj.idc1_code
+  idc2_code = env_obj.idc2_code
+  broadcast = env_obj.broadcast
+  rdfa_list = env_obj.rdfa_list
+
+  # 初始化zk连接
+  zk_list = list()
+  print(zk_idc1)
+  try:
+    zk1 = KazooClient(zk_idc1)
+    zk1.start()
+    zk_list.append(zk1)
+    if not zk_idc1 == zk_idc2:
+      zk2 = KazooClient(zk_idc2)
+      zk2.start()
+      zk_list.append(zk2)
+  except:
+    data = {}
+    data.setdefault("code", "-1")
+    data.setdefault("msg", "连接zk失败")
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+  # 创建根节点
+  root_value = idc1_code + "," + idc2_code
+  for zk in zk_list:
+    if not zk.exists(root_path):
+      createZkNode(zk, root_path, root_value.encode("utf8"))
+    else:
+      zk.set(root_path, root_value.encode("utf8"))
+
+  # 初始化broadcast
+  broadcast_path = root_path + "/broadcast"
+  for zk in zk_list:
+    if not zk.exists(broadcast_path):
+      createZkNode(zk, broadcast_path, broadcast.encode("utf8"))
+
+  # 初始化cdfa
+  cdfa_path = root_path + "/cdfa"
+  cdfa_value = idc1_code + "80"
+  for zk in zk_list:
+    if not zk.exists(cdfa_path):
+      createZkNode(zk, cdfa_path, cdfa_value.encode("utf8"))
+
+  # 初始化cmdfa
+  cmdfa_path = root_path + "/cmdfa"
+  cmdfa_value = idc1_code + "M0"
+  for zk in zk_list:
+    if not zk.exists(cmdfa_path):
+      createZkNode(zk, cmdfa_path, cmdfa_value.encode("utf8"))
+
+  # 初始化rdfa列表
+  # rdfa_path = root_path + "/rdfa"
+  # rdfa_value = "[" + ",".join(rdfa_list) + "]"
+  # for zk in zk_list:
+  #   createZkNode(zk, rdfa_path, rdfa_value.encode("utf8"))
+  # for rdfa in rdfa_list:
+  print(rdfa_list)
+
+  return HttpResponseRedirect(reverse("route:env_info", kwargs={"env": name}))
