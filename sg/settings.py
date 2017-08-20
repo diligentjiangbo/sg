@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'sg',
         'USER': 'root',
         'PASSWORD': '1jcsxdL1',
-        'HOST': '127.0.0.1',
+        'HOST': '115.159.198.113',
         'PORT': '3306',
         'OPTIONS': {
             'autocommit': True

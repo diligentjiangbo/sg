@@ -1,86 +1,32 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='UTF-8'/>
-  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
-  <link rel="stylesheet" href="{% static 'css/metisMenu.min.css' %}"/>
-</head>
-<body>
-  
-  
-  <div class="well container">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">路由控制平台</a>
-        </div>    
-      </div><!-- /.container-fluid -->
-    </nav>
-    
-    <div class="row">
-      <div class="col-md-3" >
-        <ul class="metismenu" id="menu">
-          <li><a href="#" aria-expanded="false">服务</a>
-            <ul aria-expanded="false">
-              <li><a href="{% url 'route:add_service' %}" aria-expanded="false">新增服务</a></li>
-              <li><a href="{% url 'route:uploadH' %}" aria-expanded="false">上传文件</a></li>
-              <li><a href="{% url 'route:service' %}" aria-expanded="false">全量服务</a></li>
-            </ul>
-          </li>
-          <li><a href="#" aria-expanded="false">环境</a>
-            <ul aria-expanded="false">
-              <li><a href="{% url 'route:add_envH' %}" aria-expanded="false">新增环境</a></li>
-              <li><a href="{% url 'route:env' %}" aria-expanded="false">环境列表</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-9">
-      
-        <form class="form-horizontal" action="/route/service_add/" method="POST">
-          {% csrf_token %}
-          <div class="form-group">
-            <label for="service_id" class="col-sm-2 control-label">服务号</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="service_id" name="service_id" placeholder="service_id"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="scene_id" class="col-sm-2 control-label">场景号</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="scene_id" name="scene_id" placeholder="scene_id"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="dfa" class="col-sm-2 control-label">部署区域</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="dfa" name="dfa" placeholder="dfa"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-default">新增</button>
-            </div>
-          </div>
-        </form>
-          
-      </div>
+{% extends 'route/base.html' %}
+{% block content %}
+<form class="form-horizontal" action="/route/service_add/" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="service_id" class="col-sm-2 control-label">服务号</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="service_id" name="service_id" placeholder="service_id"/>
+        </div>
     </div>
-  </div>
-  
-  
-  <script src="{% static 'js/jquery-3.2.1.min.js' %}" ></script>
-  <script src="{% static 'js/metisMenu.min.js' %}" ></script>
-  <script src="{% static 'js/bootstrap.min.js' %}" ></script>
-  <script>
-    $(function(){
-      //加载页面时二级目录关闭
-      //$("#menu").metisMenu({toggel:false})
-      
-      
-    });
-  </script>
-</body>
-</html>
+    <div class="form-group">
+        <label for="scene_id" class="col-sm-2 control-label">场景号</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="scene_id" name="scene_id" placeholder="scene_id"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="dfa" class="col-sm-2 control-label">部署区域</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="dfa" name="dfa" placeholder="dfa"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">新增</button>
+        </div>
+    </div>
+</form>
+{% endblock content %}
+
+{% block js %}
+{% endblock js %}

@@ -1,174 +1,121 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset='UTF-8'/>
-  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
-  <link rel="stylesheet" href="{% static 'css/metisMenu.min.css' %}"/>
-</head>
-<body>
-  
-  
-  <div class="well container">
-    <nav class="navbar navbar-default">
-      <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">路由控制平台</a>
-        </div>    
-      </div><!-- /.container-fluid -->
-    </nav>
-    
-    <div class="row">
-      <div class="col-md-3" >
-        <ul class="metismenu" id="menu">
-          <li><a href="#" aria-expanded="false">服务</a>
-            <ul aria-expanded="false">
-              <li><a href="{% url 'route:add_service' %}" aria-expanded="false">新增服务</a></li>
-              <li><a href="{% url 'route:uploadH' %}" aria-expanded="false">上传文件</a></li>
-              <li><a href="{% url 'route:service' %}" aria-expanded="false">全量服务</a></li>
-            </ul>
-          </li>
-          <li><a href="#" aria-expanded="false">环境</a>
-            <ul aria-expanded="false">
-              <li><a href="{% url 'route:add_envH' %}" aria-expanded="false">新增环境</a></li>
-              <li><a href="{% url 'route:env' %}" aria-expanded="false">环境列表</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-      <div class="col-md-9">
-      
-        <form class="form-horizontal" action="/route/add_env/" method="POST">
-          {% csrf_token %}
-          <div class="form-group">
-            <label class="col-sm-2 control-label">环境名称</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="name" placeholder="SIT,UAT,DEV"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">环境描述</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="desc" placeholder="用于内部人员测试"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc1的zk地址</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="zk_idc1" placeholder="127.0.0.1:2181"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc2的zk地址</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="zk_idc2" placeholder="127.0.0.1:2181"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">名称服务器地址</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="namesrv" placeholder="127.0.0.1:6606;192.168.210.1:6606"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc1的broker地址</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="broker_idc1" placeholder="127.0.0.1:6609;192.168.210.1:6609"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc2的broker地址</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="broker_idc2" placeholder="127.0.0.1:6609;192.168.210.1:6609"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc1的集群名</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="cluster_name_idc1" placeholder="WGQ"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc2的集群名</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="cluster_name_idc2" placeholder="ZP"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc1编号</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="idc1_code" placeholder="a,b,c,d,e"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">idc2编号</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="idc2_code" placeholder="a,b,c,d,e"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">广播码</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" name="broadcast" placeholder="Z10,Z20,Z30"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">IDC1 RDFA</label>
-            <div class="col-sm-10">
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc1_rdfa_list" value="10"> RDFA1
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc1_rdfa_list" value="20"> RDFA2
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc1_rdfa_list" value="30"> RDFA3
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc1_rdfa_list" value="40"> RDFA4
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-2 control-label">IDC2 RDFA</label>
-            <div class="col-sm-10">
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc2_rdfa_list" value="10"> RDFA1
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc2_rdfa_list" value="20"> RDFA2
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc2_rdfa_list" value="30"> RDFA3
-              </label>
-              <label class="checkbox-inline">
-                <input type="checkbox" name="idc2_rdfa_list" value="40"> RDFA4
-              </label>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-              <button type="submit" class="btn btn-default">新增</button>
-            </div>
-          </div>
-        </form>
-          
-      </div>
+{% extends 'route/base.html' %}
+
+{% block content %}
+<form class="form-horizontal" action="/route/add_env/" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label class="col-sm-2 control-label">环境名称</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="name" placeholder="SIT,UAT,DEV"/>
+        </div>
     </div>
-  </div>
-  
-  
-  <script src="{% static 'js/jquery-3.2.1.min.js' %}" ></script>
-  <script src="{% static 'js/metisMenu.min.js' %}" ></script>
-  <script src="{% static 'js/bootstrap.min.js' %}" ></script>
-  <script>
-    $(function(){
-      //加载页面时二级目录关闭
-      //$("#menu").metisMenu({toggel:false})
-      
-      
-    });
-  </script>
-</body>
-</html>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">环境描述</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="desc" placeholder="用于内部人员测试"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc1的zk地址</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="zk_idc1" placeholder="127.0.0.1:2181"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc2的zk地址</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="zk_idc2" placeholder="127.0.0.1:2181"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">名称服务器地址</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="namesrv" placeholder="127.0.0.1:6606;192.168.210.1:6606"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc1的broker地址</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="broker_idc1" placeholder="127.0.0.1:6609;192.168.210.1:6609"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc2的broker地址</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="broker_idc2" placeholder="127.0.0.1:6609;192.168.210.1:6609"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc1的集群名</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="cluster_name_idc1" placeholder="WGQ"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc2的集群名</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="cluster_name_idc2" placeholder="ZP"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc1编号</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="idc1_code" placeholder="a,b,c,d,e"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">idc2编号</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="idc2_code" placeholder="a,b,c,d,e"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">广播码</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="broadcast" placeholder="Z10,Z20,Z30"/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">IDC1 RDFA</label>
+        <div class="col-sm-10">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc1_rdfa_list" value="10"> RDFA1
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc1_rdfa_list" value="20"> RDFA2
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc1_rdfa_list" value="30"> RDFA3
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc1_rdfa_list" value="40"> RDFA4
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-2 control-label">IDC2 RDFA</label>
+        <div class="col-sm-10">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc2_rdfa_list" value="10"> RDFA1
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc2_rdfa_list" value="20"> RDFA2
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc2_rdfa_list" value="30"> RDFA3
+            </label>
+            <label class="checkbox-inline">
+                <input type="checkbox" name="idc2_rdfa_list" value="40"> RDFA4
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">新增</button>
+        </div>
+    </div>
+</form>
+{% endblock content %}
+
+{% block js %}
+{% endblock js %}
