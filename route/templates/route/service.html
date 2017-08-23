@@ -18,6 +18,7 @@
                 <div class="modal-body">
                     <form action="{% url 'route:publish2env' %}" method="POST">
                         {% csrf_token %}
+                        <input type="hidden" name="id"/>
                         <div class="checkbox">
 
                         </div>
@@ -61,6 +62,8 @@
                     <a href="{% url 'route:delete_service' service.id %}">
                         <button class="btn btn-default" type="button">删除</button>
                     </a>
+                    <button class="btn btn-default single_publish" type="button">同步</button>
+                    <input type="hidden" value="{{ service.id }}"/>
                 </td>
             </tr>
             {% endfor %}
@@ -145,6 +148,16 @@
           }
         });
       });
+
+      //点击每个具体服务的同步按钮时
+      $(".single_publish").on("click", function(){
+          var hidden_id = $(this).next().val();
+          console.log("hidden_id=" + hidden_id);
+          $(".choose-env input[name='id']").val(hidden_id);
+          $(".choose-env").modal();
+      });
+
+
     });
 </script>
 {% endblock js %}

@@ -163,7 +163,7 @@ def add_env(request):
     env.rdfa_list = ",".join(rdfa_list)
       
     env.save()
-  return HttpResponseRedirect("/route/service")
+  return HttpResponseRedirect("/route/env")
   
 #展示环境列表
 def env(request):
@@ -193,10 +193,15 @@ def env(request):
 def publish2env(request):
   if request.method == 'POST':
     env_list = request.POST.getlist('env_list')
+    s_id = request.POST.get("id")
+    print("s_id=%s"%(s_id))
     if env_list:
       #将全量表中不存在于环境相关表的导入，并将zk_type和giraffe_type置为True
       insert_list = list()
-      services = Service.objects.all()
+      if s_id:
+        services = [Service.objects.get(pk=s_id)]
+      else:
+        services = Service.objects.all()
       for env in env_list:
         for service in services:
           if not ServiceEnv.objects.filter(env=env,service_id=service.service_id,scene_id=service.scene_id,dfa=service.dfa).exists():
@@ -536,6 +541,8 @@ def init_env(request, name):
   for zk in zk_list:
     if not zk.exists(cdfa_path):
       createZkNode(zk, cdfa_path, cdfa_value.encode("utf8"))
+    else:
+      zk.set(cdfa_path, cdfa_value.encode("utf8"))
 
   # 初始化cmdfa
   cmdfa_path = root_path + "/cmdfa"
@@ -543,14 +550,27 @@ def init_env(request, name):
   for zk in zk_list:
     if not zk.exists(cmdfa_path):
       createZkNode(zk, cmdfa_path, cmdfa_value.encode("utf8"))
+    else:
+      zk.set(cmdfa_path, cmdfa_value.encode("utf8"))
 
-  # 初始化rdfa列表
-  # rdfa_path = root_path + "/rdfa"
+  # 创建rdfa节点，不赋值
+  rdfa_path = root_path + "/rdfa"
   # rdfa_value = "[" + ",".join(rdfa_list) + "]"
-  # for zk in zk_list:
-  #   createZkNode(zk, rdfa_path, rdfa_value.encode("utf8"))
-  # for rdfa in rdfa_list:
-  print(rdfa_list)
+  for zk in zk_list:
+    if not zk.exists(rdfa_path):
+      createZkNode(zk, rdfa_path, "".encode("utf8"))
+
+  # 创建appId节点，不赋值
+  appId_path = root_path + "/appId"
+  for zk in zk_list:
+    if not zk.exists(appId_path):
+      createZkNode(zk, appId_path, "".encode("utf8"))
+
+  # 创建dfatable节点，不赋值
+  dfatable_path = root_path + "/dfatable"
+  for zk in zk_list:
+    if not zk.exists(dfatable_path):
+      createZkNode(zk, dfatable_path, "".encode("utf8"))
 
   return HttpResponseRedirect(reverse("route:env_info", kwargs={"env": name}))
 
