@@ -21,5 +21,6 @@ urlpatterns = [
   url(r'^env2giraffe/(?P<env>.*)/$', views.env2giraffe, name='env2giraffe'),
   url(r'^delete_service/(?P<id>.*)/$', views.delete_service, name='delete_service'),
   url(r'^delete_env/(?P<name>.*)/$', views.delete_env, name='delete_env'),
-  url(r'^init_env/(?P<name>.*)/$', views.init_env, name='init_env')
+  url(r'^init_env/(?P<name>.*)/$', views.init_env, name='init_env'),
+  url(r'^test/$', views.test, name='test')
 ]

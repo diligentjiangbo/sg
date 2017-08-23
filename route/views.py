@@ -473,7 +473,8 @@ def delete_env(request, name):
     data = {}
     data.setdefault("code", "-1")
     data.setdefault("msg", "连接zk失败")
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    zk_list.clear()
+    #return HttpResponse(json.dumps(data), content_type="application/json")
 
   # 删除该环境的根节点
   for zk in zk_list:
@@ -526,6 +527,8 @@ def init_env(request, name):
   for zk in zk_list:
     if not zk.exists(broadcast_path):
       createZkNode(zk, broadcast_path, broadcast.encode("utf8"))
+    else:
+      zk.set(broadcast_path, broadcast.encode("utf8"))
 
   # 初始化cdfa
   cdfa_path = root_path + "/cdfa"
@@ -550,3 +553,12 @@ def init_env(request, name):
   print(rdfa_list)
 
   return HttpResponseRedirect(reverse("route:env_info", kwargs={"env": name}))
+
+def test(request):
+  print("hello world111")
+  service = Service.objects.all()
+  for s in service:
+    print(s.service_id)
+  h = HttpResponse(content = ','.join([s.service_id for s in service]))
+  print(h.content)
+  return h
